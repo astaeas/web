@@ -1,0 +1,53 @@
+image: node:14
+
+stages:
+  - build
+  - test
+  - deploy
+
+build_frontend:
+  stage: build
+  script:
+    - cd frontend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/build
+
+build_backend:
+  stage: build
+  script:
+    - cd backend
+    - pip install -r requirements.txt
+    - python -m unittest discover
+  artifacts:
+    paths:
+      - backend/__pycache__/
+
+build_nginx:
+  stage: build
+  script:
+    - cd nginx
+    - docker build -t my_nginx .
+  artifacts:
+    paths:
+      - nginx/
+
+test_frontend:
+  stage: test
+  script:
+    - cd frontend
+    - npm test -- --watchAll=false
+
+test_backend:
+  stage: test
+  script:
+    - cd backend
+    - python -m unittest discover
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying to production server"
+    # Добавьте здесь команды для развертывания, например, через SSH
