@@ -1,4 +1,7 @@
-image: node:14
+image: docker:latest
+
+services:
+  - docker:dind
 
 stages:
   - build
@@ -29,12 +32,8 @@ build_backend:
 build_nginx:
   stage: build
   script:
-    - apt-get update && apt-get install -y docker.io
     - cd nginx
     - docker build -t my_nginx .
-  artifacts:
-    paths:
-      - nginx/
 
 test_frontend:
   stage: test
