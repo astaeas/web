@@ -18,6 +18,7 @@ build_frontend:
 build_backend:
   stage: build
   script:
+    - apt-get update && apt-get install -y python3 python3-pip
     - cd backend
     - pip install -r requirements.txt
     - python -m unittest discover
@@ -28,6 +29,7 @@ build_backend:
 build_nginx:
   stage: build
   script:
+    - apt-get update && apt-get install -y docker.io
     - cd nginx
     - docker build -t my_nginx .
   artifacts:
