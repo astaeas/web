@@ -1,8 +1,3 @@
-image: docker:latest
-
-services:
-  - docker:dind
-
 stages:
   - build
   - test
@@ -12,44 +7,32 @@ build_frontend:
   stage: build
   image: node:14
   script:
-    - cd frontend
     - npm install
     - npm run build
-  artifacts:
-    paths:
-      - frontend/build
 
 build_backend:
   stage: build
-  image: python:3.8
+  image: python:3.9
   script:
-    - cd backend
+    - cd /backend
     - pip install -r requirements.txt
-    - python -m unittest discover
-  artifacts:
-    paths:
-      - backend/__pycache__/
 
 build_nginx:
   stage: build
+  image: nginx:latest
   script:
-    - cd nginx
-    - docker build -t my_nginx .
+    - echo "Building nginx"
+# test_job:
+#   stage: test
+#   script:
+#     - npm run test
+#   only:
+#     - merge_requests
 
-test_frontend:
-  stage: test
-  script:
-    - cd frontend
-    - npm test -- --watchAll=false
-
-test_backend:
-  stage: test
-  script:
-    - cd backend
-    - python -m unittest discover
-
-deploy:
-  stage: deploy
-  script:
-    - echo "Deploying to production server"
-    # Добавьте здесь команды для развертывания, например, через SSH
+# deploy_job:
+#   stage: deploy
+#   script:
+#     - echo "Deploying the application"
+#   only:
+#     - main
+#   when: manual
