@@ -21,7 +21,7 @@ stages:
 build_and_push_frontend:
   stage: build
   script:
-    - docker login $DOCKER_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD  # Логин в реестр
+    - docker login $DOCKER_REGISTRY -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
     - docker build -t $IMAGE_NAME/frontend:$TAG -f frontend/Dockerfile frontend/  # Сборка образа
     - docker push $IMAGE_NAME/frontend:$TAG  # Пуш образа в реестр
   only:
@@ -31,7 +31,7 @@ build_and_push_frontend:
 build_and_push_backend:
   stage: build
   script:
-    - docker login $DOCKER_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD  # Логин в реестр
+    - docker login $DOCKER_REGISTRY -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
     - docker build -t $IMAGE_NAME/backend:$TAG -f backend/Dockerfile backend/  # Сборка образа
     - docker push $IMAGE_NAME/backend:$TAG  # Пуш образа в реестр
   only:
@@ -41,7 +41,7 @@ build_and_push_backend:
 build_and_push_nginx:
   stage: build
   script:
-    - docker login $DOCKER_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD  # Логин в реестр
+    - docker login $DOCKER_REGISTRY -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
     - docker build -t $IMAGE_NAME/nginx:$TAG -f nginx/Dockerfile nginx/  # Сборка образа
     - docker push $IMAGE_NAME/nginx:$TAG  # Пуш образа в реестр
   only:
