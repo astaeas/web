@@ -1,38 +1,58 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay2  
+  TAG: $CI_COMMIT_SHORT_SHA
+
 stages:
   - build
-  - test
-  - deploy
+  - push
 
 build_frontend:
   stage: build
-  image: node:14
   script:
-    - npm install
-    - npm run build
+    - docker build -t $CI_REGISTRY_IMAGE/frontend:$TAG frontend/
+  only:
+    - main
 
 build_backend:
   stage: build
-  image: python:3.9
   script:
-    - cd /backend
-    - pip install -r requirements.txt
+    - docker build -t $CI_REGISTRY_IMAGE/backend:$TAG backend/
+  only:
+    - main
 
 build_nginx:
   stage: build
-  image: nginx:latest
   script:
-    - echo "Building nginx"
-# test_job:
-#   stage: test
-#   script:
-#     - npm run test
-#   only:
-#     - merge_requests
+    - docker build -t $CI_REGISTRY_IMAGE/nginx:$TAG nginx/
+  only:
+    - main
 
-# deploy_job:
-#   stage: deploy
-#   script:
-#     - echo "Deploying the application"
-#   only:
-#     - main
-#   when: manual
+push_frontend:
+  stage: push
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE/frontend:$TAG
+  only:
+    - main
+
+push_backend:
+  stage: push
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE/backend:$TAG
+  only:
+    - main
+
+push_nginx:
+  stage: push
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE/nginx:$TAG
+  only:
+    - main
+
