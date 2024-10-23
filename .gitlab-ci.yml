@@ -8,7 +8,7 @@ services:
 # Определяем переменные
 variables:
   DOCKER_DRIVER: overlay2
-  DOCKER_REGISTRY: 192.168.56.3:5050  # Ваш Docker Registry
+  # DOCKER_REGISTRY: 192.168.56.3:5050  # Ваш Docker Registry
   IMAGE_NAME: $DOCKER_REGISTRY/root/web  # Имя образа
   TAG: $CI_COMMIT_SHORT_SHA  # Уникальный тег для образа
 
