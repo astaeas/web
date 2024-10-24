@@ -1,50 +1,44 @@
-# Используем образ Docker
 image: docker:latest
 
-# Включаем Docker-in-Docker (dind) для сборки контейнеров
 services:
   - docker:dind
 
-# Определяем переменные
 variables:
   DOCKER_DRIVER: overlay2
-  # DOCKER_REGISTRY: 192.168.56.3:5050  # Ваш Docker Registry
-  IMAGE_NAME: $DOCKER_REGISTRY/root/web  # Имя образа
-  TAG: $CI_COMMIT_SHORT_SHA  # Уникальный тег для образа
+  DOCKER_HOST: tcp://docker:2375  # Настройка для взаимодействия с сервисом docker:dind
+  IMAGE_NAME: $DOCKER_REGISTRY/root/web
+  TAG: $CI_COMMIT_SHORT_SHA
+  DOCKER_TLS_CERTDIR: ""
 
-# Определяем этапы
 stages:
   - build
   - push
 
-# Сборка и загрузка frontend
 build_and_push_frontend:
   stage: build
   script:
     - echo "$DOCKER_REGISTRY"
     - docker login $DOCKER_REGISTRY -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
-    - docker build -t $IMAGE_NAME/frontend:$TAG -f frontend/Dockerfile frontend/  # Сборка образа
-    - docker push $IMAGE_NAME/frontend:$TAG  # Пуш образа в реестр
+    - docker build -t $IMAGE_NAME/frontend:$TAG -f frontend/Dockerfile frontend/
+    - docker push $IMAGE_NAME/frontend:$TAG
   only:
-    - main  # Запускать только для главной ветки
+    - main
 
-# Сборка и загрузка backend
 build_and_push_backend:
   stage: build
   script:
     - docker login $DOCKER_REGISTRY -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
-    - docker build -t $IMAGE_NAME/backend:$TAG -f backend/Dockerfile backend/  # Сборка образа
-    - docker push $IMAGE_NAME/backend:$TAG  # Пуш образа в реестр
+    - docker build -t $IMAGE_NAME/backend:$TAG -f backend/Dockerfile backend/
+    - docker push $IMAGE_NAME/backend:$TAG
   only:
-    - main  # Запускать только для главной ветки
+    - main
 
-# Сборка и загрузка nginx
 build_and_push_nginx:
   stage: build
   script:
     - docker login $DOCKER_REGISTRY -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
-    - docker build -t $IMAGE_NAME/nginx:$TAG -f nginx/Dockerfile nginx/  # Сборка образа
-    - docker push $IMAGE_NAME/nginx:$TAG  # Пуш образа в реестр
+    - docker build -t $IMAGE_NAME/nginx:$TAG -f nginx/Dockerfile nginx/
+    - docker push $IMAGE_NAME/nginx:$TAG
   only:
-    - main  # Запускать только для главной ветки
+    - main
 
