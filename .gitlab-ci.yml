@@ -1,15 +1,11 @@
 image: docker:latest
 
-services:
-  - docker:dind
-
 variables:
   DOCKER_DRIVER: overlay2
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_EXTRA_OPTS: "--insecure-registry=192.168.56.3:5050"
   IMAGE_NAME: $DOCKER_REGISTRY/root/web
   TAG: $CI_COMMIT_SHORT_SHA
-  DOCKER_TLS_CERTDIR: ""
+
+services: []
 
 stages:
   - build
